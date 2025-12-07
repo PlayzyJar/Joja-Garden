@@ -8,7 +8,7 @@ connect_args = (
 )
 
 engine = create_engine(
-    settings.DATABASE_URL, connect_args=connect_args, poll_pre_ping=True
+    settings.DATABASE_URL, connect_args=connect_args, pool_pre_ping=True
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

@@ -22,7 +22,7 @@ class Super_usuario(Base):
     __mapper_args__ = {"polymorphic_identity": "baser_user", "polymorphic_on": type}
 
 
-class Admin(Base):
+class Admin(Super_usuario):
     __tablename__ = "admin"
     id = Column("id", Integer, ForeignKey("super_usuario.id"), primary_key=True)
     matricula = Column("matricula", String, default="")
