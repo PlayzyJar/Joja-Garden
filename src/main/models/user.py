@@ -7,17 +7,9 @@ from sqlalchemy import (
     String,
     create_engine,
 )
-from sqlalchemy.orm import declarative_base
-
+from main.db.base_class import Base
 # Cria a conexão com o banco
-db = create_engine("sqllite:///banco.db")
 
-# Cria a base
-
-Base = declarative_base()
-
-
-# Superusuario
 class Super_usuario(Base):
     __tablename__ = "super_usuario"
 
