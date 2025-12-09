@@ -24,11 +24,11 @@ class PlantaCatalogo(Base):
     categoria = Column("categoria", String)
     familia = Column("familia", String)
     descricao = Column("descricao", Text)
-    instrucoes_Cuidado = Column("instrucoes_Cuidado", Text, nullable=True)
+    instrucoes_cuidado = Column("instrucoes_Cuidado", Text, nullable=True)
     img_url = Column("imagem", String)
-    periodicidade_Rega = Column(Integer, default=2)
-    periodicidade_Poda = Column(Integer, default=30)
-    periodicidade_Adubo = Column(Integer, default=15)
+    periodicidade_rega = Column(Integer, default=2)
+    periodicidade_poda = Column(Integer, default=30)
+    periodicidade_adubo = Column(Integer, default=15)
 
     # Valores default arbitrarios para os itens acima
 
