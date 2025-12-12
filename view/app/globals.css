@@ -1,0 +1,22 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+    --font-sv: "stardew-valley", sans-serif;
+}
+
+@font-face {
+    font-family: "stardew-valley";
+    src: url("/fonts/stardew-valley.otf") format("opentype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "stardew-valley";
+    src: url("/fonts/svbold.otf") format("opentype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
