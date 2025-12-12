@@ -41,3 +41,37 @@ def test_criar_admin_cpf_diferentes(client: TestClient):
 
     assert(response.status_code == status.HTTP_201_CREATED)
     assert(response2.status_code == status.HTTP_201_CREATED)
+
+def test_criar_admin_senha_menor_8_digitos():
+    admin_senha_pequena{
+        "cpf" : "24785993090",
+        "nome" : "teste",
+        "senha" : "1234567"
+    }
+    response = cliente.post("admin/criar_conta", json = admin_senha_pequena)
+    assert(response.status_code == status.HTTP_400_BAD_REQUEST)
+
+def test_criar_admin_senha_8_digitos_fraca():
+
+    admin_senha_fraca{
+        "nome" : "senha fraca",
+        "cpf" : "24785993090",
+        "senha" : "12345678",
+    }
+
+    response = cliente.post("admin/criar_conta" , json = admin_senha_fraca)
+    assert(response.status_code == status.HTTP_400_BAD_REQUEST)
+
+def test_criar_admin_vazio():
+    admin_nulo {}
+    response = cliente.post("admin/criar_conta", json = admin_nulo)
+
+    assert(response.status_code == status.HTTP_400_BAD_REQUEST)
+
+def test_criar_admin_sem_campos_obrigatorios():
+    admin{
+        "nome" : "pikachu"
+    }
+
+    response = client.post("admin/criar_admin", json = admin)
+    assert(response.status_code == statu.HTTP_400_BAD_REQUEST)
