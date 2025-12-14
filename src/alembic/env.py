@@ -25,8 +25,8 @@ if config.config_file_name is not None:
 from main.db.base_class import Base
 from main.models.plant import PlantaCatalogo
 from main.models.user import Admin, Super_usuario, Usuario
-from src.main.models.garden import Jardim
-
+from main.models.jardim import Jardim
+from main.models.acao import Acao
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

@@ -9,6 +9,7 @@ from .api.endpoints import (
     planta_router,
     usuario_router,
     jardim_router,
+    acao_router,
 )
 
 app.include_router(admin_router.router, prefix="/admin", tags=["Admins"])
@@ -22,4 +23,6 @@ app.include_router(planta_router.router, prefix="/planta", tags=["Planta"])
 app.include_router(catalogo_router.router, prefix="/catalogo", tags=["Catalogo"])
 
 app.include_router(jardim_router.router, prefix= "/jardim", tags = ["Jardim"])
+
+app.include_router(acao_router.router, prefix="/acao", tags = ["Acao"])
 # Para executar o código no terminal, utilizar unicorn main:app --reload

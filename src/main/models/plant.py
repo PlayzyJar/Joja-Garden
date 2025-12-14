@@ -50,3 +50,6 @@ class PlantaUsuario(Base):
 
     jardim_id = Column("jardim", Integer, ForeignKey("jardim.id"), nullable=True)
     jardim = relationship("jardim", back_populates="planta_usuario")
+
+    historico = relationship("Acao", back_populates="planta", cascade = "all, delete-orphan")
+

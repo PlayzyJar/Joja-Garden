@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+
 
 from main.api.deps import get_current_user, get_db
-from main.models.plant import PlantaCatalogo, PlantaUsuario
-from main.models.garden import Jardim
+from main.models.plant import PlantaUsuario
+from src.main.models.jardim import Jardim
 from main.models.user import Usuario
 
 from main.schemas.jardim_schema import JardimCreate, JardimResponse
+
 router = APIRouter()
 
 @router.post(
