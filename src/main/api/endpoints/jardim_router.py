@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from main.api.deps import get_current_user, get_db
 from main.models.plant import PlantaUsuario
-from src.main.models.jardim import Jardim
+from main.models.jardim import Jardim
 from main.models.user import Usuario
 
 from main.schemas.jardim_schema import JardimCreate, JardimResponse

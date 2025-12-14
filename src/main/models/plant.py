@@ -53,3 +53,4 @@ class PlantaUsuario(Base):
 
     historico = relationship("Acao", back_populates="planta", cascade = "all, delete-orphan")
 
+    galeria = relationship("Imagem", back_populates="planta", cascade = "all, delete-orphan")

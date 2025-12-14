@@ -27,6 +27,7 @@ from main.models.plant import PlantaCatalogo
 from main.models.user import Admin, Super_usuario, Usuario
 from main.models.jardim import Jardim
 from main.models.acao import Acao
+from main.models.imagem import Imagem
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from main.api.deps import get_current_user, get_db
 from main.models.plant import PlantaUsuario
-from src.main.models.acao import Acao
+from main.models.acao import Acao
 
 from main.schemas.acao_schema import AcaoCreate, AcaoResponse
 from datetime import datetime
@@ -48,11 +48,10 @@ def realizar_acao(
     response_model= List[AcaoResponse]
 )
 def listar_acoes(
-    planta_id : id,
+    planta_id : int,
     current_user = Depends(get_current_user),
     session = Depends(get_db),
-    skip : int = 0,
-    limit : int = 25
+ 
 ):
     if not session.query(PlantaUsuario).filter(PlantaUsuario.id == planta_id).first():
         raise HTTPException(status_code= 404, detail = "Planta não encontrada")
