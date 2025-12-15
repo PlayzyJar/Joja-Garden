@@ -32,4 +32,22 @@ def validar_cpf(cpf):
         return retorno
 
     return True
-  
+
+def valida_senha(senha):
+    retorno = False
+    if len(senha) < 8:
+        return retorno
+
+    if " " in senha:
+        return retorno
+
+    tem_numero = False
+    tem_maiuscula = False
+
+    for caract in senha:
+        if caract.isdigit():
+            tem_numero = True
+        if caract.isupper():
+            tem_maiuscula = True
+
+    return tem_numero and tem_maiuscula
