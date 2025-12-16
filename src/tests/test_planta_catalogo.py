@@ -94,3 +94,36 @@ class TestCadastroPlantaCatalogo:
         response = client.post("/catalogo/adicionar_planta_catalogo", headers = header, json = planta_catalogo_valida)
 
         assert(response.status_code == status.HTTP_403_FORBIDDEN)
+
+
+class TestVisualizarCatalogo:
+
+    def test_usuario_tenta_visualizar_catalogo_plantas(self, client:TestClient, get_usuario_header, get_admin_header, planta_catalogo_valida):
+
+     
+        header = get_admin_header
+        response = client.post("/catalogo/adicionar_planta_catalogo", headers = header, json = planta_catalogo_valida)
+
+       
+        header_usuario = get_usuario_header
+
+     
+        response = client.get("/catalogo/visualizar", headers = header_usuario)
+
+        dados = response.json()
+
+        assert(response.status_code == status.HTTP_200_OK)
+        assert isinstance(data, list)   
+    
+    def test_admin_tenta_visualizar_catalogo_plantas(self, client:TestClient, get_admin_header, planta_catalogo_valida):
+       
+        header = get_admin_header
+        response = client.post("/catalogo/adicionar_planta_catalogo", headers = header, json = planta_catalogo_valida)
+
+        response = client.get("/catalogo/visualizar", headers = header)
+
+        assert(response.status_code == status.HTTP_200_OK)
+
+class TestAdicionarPlantaAoUsuario:
+
+    def test_admin_adiciona_planta_ao_usuario(self, client:TestClient, get_admin_header, get_usuario_com_jardim)
