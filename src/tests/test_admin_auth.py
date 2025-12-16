@@ -1,43 +1,153 @@
 from fastapi.testclient import TestClient
 from fastapi import status
+from main.models.user import Super_usuario
+from sqlalchemy.orm import Session
 
-
-admin1 = {
+admin_valido = {
     "nome": "Admin Teste",
-    "cpf": "12345678901",
-    "senha": "SenhaSegura123",
+    "cpf": "08601441009",
+    "senha": "Gri90p2M@8(Y",
 }
+usuario_valido = {
+    "nome": "Cliente Feliz",
+    "cpf": "11122233344",
+    "email": "cliente@email.com",
+    "senha": "senha_cliente",
+    "endereco" : "rua 1"
+     
+}
+def get_admin_header(client:TestClient):
 
-def test_create_admin(client: TestClient):
+            client.post("admin/criar_conta", json = admin_valido)
 
-    rota = client.post("admin/criar_conta", json=admin1)
+            login = {"username" : admin_valido["cpf"], "password" : admin_valido["senha"]}
+            response = client.post("/auth/token", data = login)
+            assert response.status_code == 200, f"Login falhou: {response.json()}"
+            token = response.json()["access_token"]
+            return {"Authorization" : f"Bearer {token}"}
 
-    assert rota.status_code == status.HTTP_201_CREATED
+class TestCriarAdmin:
+    def test_create_admin(self, client: TestClient):
 
-    data = rota.json()
-    assert "id" in data
-    assert data["cpf"] == admin1["cpf"]
-    assert data["nome"] == admin1["nome"]
-    assert "senha" not in data
+        rota = client.post("admin/criar_conta", json=admin_valido)
 
-def test_criar_admin_cpf_iguais(client: TestClient):
+        assert rota.status_code == status.HTTP_201_CREATED
 
-    response = client.post("admin/criar_conta", json=admin1)
-    response2 = client.post("admin/criar_conta", json=admin1)
+        data = rota.json()
+        assert "id" in data
+        assert data["cpf"] == admin_valido["cpf"]
+        assert data["nome"] == admin_valido["nome"]
+        assert "senha" not in data
 
-    assert response.status_code == status.HTTP_201_CREATED
-    assert response2.status_code == status.HTTP_400_BAD_REQUEST
+    def test_criar_admin_cpf_iguais(self, client: TestClient):
 
-def test_criar_admin_cpf_diferentes(client: TestClient):
+        response = client.post("admin/criar_conta", json=admin_valido)
+        response2 = client.post("admin/criar_conta", json=admin_valido)
 
-    admin2 = {
-        "nome" : "João",
-        'cpf' : "12345678910",
-        "senha" : "123456",
-    }
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response2.status_code == status.HTTP_400_BAD_REQUEST
 
-    response = client.post("admin/criar_conta", json = admin2)
-    response2 = client.post("admin/criar_conta", json = admin1)
+    def test_criar_admin_cpf_diferentes(self, client: TestClient):
 
-    assert(response.status_code == status.HTTP_201_CREATED)
-    assert(response2.status_code == status.HTTP_201_CREATED)
+        admin2 = {
+            "nome" : "João",
+            'cpf' : "12345678910",
+            "senha" : "A144oEi%w[",
+        }
+
+        response = client.post("admin/criar_conta", json = admin2)
+        response2 = client.post("admin/criar_conta", json = admin_valido)
+
+        assert(response.status_code == status.HTTP_201_CREATED)
+        assert(response2.status_code == status.HTTP_201_CREATED)
+
+    def test_criar_admin_senha_menor_8_digitos(self,client: TestClient):
+        admin_senha_pequena = {
+            "cpf" : "24785993090",
+            "nome" : "teste",
+            "senha" : "1234567"
+        }
+        response = client.post("admin/criar_conta", json = admin_senha_pequena)
+        assert(response.status_code == status.HTTP_400_BAD_REQUEST)
+
+    def test_criar_admin_senha_8_digitos_fraca(self,client: TestClient):
+
+        admin_senha_fraca = {
+            "nome" : "senha fraca",
+            "cpf" : "24785993090",
+            "senha" : "12345678",
+        }
+
+        response = client.post("admin/criar_conta" , json = admin_senha_fraca)
+        assert(response.status_code == status.HTTP_400_BAD_REQUEST)
+
+    def test_criar_admin_vazio(self,client: TestClient):
+        admin_nulo = {}
+        response = client.post("admin/criar_conta", json = admin_nulo)
+
+        assert(response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT)
+
+    def test_criar_admin_sem_campos_obrigatorios(self,client: TestClient):
+        admin = {
+            "nome" : "pikachu"
+        }
+
+        response = client.post("admin/criar_conta", json = admin)
+        assert(response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT)
+
+    def test_verificar_polimorfismo(self,client: TestClient):
+
+        response = client.post("admin/criar_conta", json = admin_valido)
+        print(response)
+        response = response.json()
+
+        assert (response is not None)
+        assert (response["tipo_usuario"] == "admin")
+
+    class TestCadastroUSuario:
+
+        """Suíte de teste para o cadastro de usuario"""
+            
+        def test_cadastro_usuario_sucesso(self,client:TestClient):
+
+            header = get_admin_header(client)
+
+            response = client.post("usuario", headers = header, json = usuario_valido)
+
+            assert(response.status_code == status.HTTP_201_CREATED)
+            dados = response.json()
+            
+            assert(dados["nome"] == usuario_valido["nome"])
+            assert(dados["tipo_usuario"] == "usuario")
+            assert(dados["email"] == usuario_valido ["email"])
+            assert "id" in dados
+            assert "senha" not in dados
+
+        def test_cadastro_cliente_vazio(self, client:TestClient):
+             
+            header = get_admin_header(client)
+            
+            cliente_vazio = {
+                "nome" : "",
+                "cpf" : "",
+                "email" : "",
+                "senha" : "",
+                "endereco" :""
+            }
+
+            response = client.post("usuario", json = cliente_vazio, headers= header)
+            assert(response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT)
+        
+        def test_cadastro_usuario_admin_sem_autenticacao(self, client:TestClient):
+             
+             response = client.post("usuario", json = usuario_valido)
+             assert(response.status_code == status.HTTP_401_UNAUTHORIZED)
+        
+        def test_criar_usuario_cpf_duplicado(self, client:TestClient):
+             
+             header = get_admin_header(client)
+
+             client.post("usuario", json = usuario_valido, headers = header)
+             response = client.post("usuario", json = usuario_valido, headers = header)
+
+             assert(response.status_code == status.HTTP_400_BAD_REQUEST)
