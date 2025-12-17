@@ -1,4 +1,4 @@
-def validar_cpf(cpf):
+def valida_cpf(cpf):
   retorno = False
   if len(cpf) != 11 or not cpf.isdigit():
         return retorno

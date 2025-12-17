@@ -1,4 +1,4 @@
-from services.verificacoes import validar_cpf
+from services.verificacoes import valida_cpf
 
 import pytest
 @pytest.mark.parametrize(
@@ -12,7 +12,7 @@ import pytest
 )
 
 def testa_cpf_invalido(cpf):
-    assert validar_cpf(cpf) is False
+    assert valida_cpf(cpf) is False
 @pytest.mark.parametrize(
         "cpf", [
             '46632770045',
@@ -24,5 +24,5 @@ def testa_cpf_invalido(cpf):
 )
 
 def testa_cpf_valido(cpf):
-    assert validar_cpf(cpf) is True
+    assert valida_cpf(cpf) is True
 
