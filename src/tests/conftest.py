@@ -93,17 +93,21 @@ def get_usuario_header(client:TestClient, usuario_payload, get_admin_header):
     return  {"Authorization" : f"Bearer {token}"}
 
 @pytest.fixture
-def get_usuario_com_jardim(client, get_admin_header, usuario_payload):
+def get_usuario_com_jardim(client, get_admin_header, usuario_payload, get_usuario_header):
 
     header_user = get_usuario_header
 
     jardim_payload = {"nome": "Jardim de Teste"}
 
-    resp_jardim = client.post("/jardins/", json=jardim_payload, headers=header_user)
-    jardim_data = resp_jardim.json()
+    resp_jardim = client.post(
+        "/jardins/",
+        json=jardim_payload,
+        headers=header_user
+    )
+
+    assert resp_jardim.status_code == 201
 
     return {
-        "usuario_id": jardim_data["usuario_id"], 
-        "nome" : jardim_data["nome"]
-        
+        "header_user": header_user,
+        "jardim": resp_jardim.json()
     }

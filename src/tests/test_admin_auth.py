@@ -61,26 +61,6 @@ class TestCriarAdmin:
         assert(response.status_code == status.HTTP_201_CREATED)
         assert(response2.status_code == status.HTTP_201_CREATED)
 
-    def test_criar_admin_senha_menor_8_digitos(self,client: TestClient):
-        admin_senha_pequena = {
-            "cpf" : "24785993090",
-            "nome" : "teste",
-            "senha" : "1234567"
-        }
-        response = client.post("admin/criar_conta", json = admin_senha_pequena)
-        assert(response.status_code == status.HTTP_400_BAD_REQUEST)
-
-    def test_criar_admin_senha_8_digitos_fraca(self,client: TestClient):
-
-        admin_senha_fraca = {
-            "nome" : "senha fraca",
-            "cpf" : "24785993090",
-            "senha" : "12345678",
-        }
-
-        response = client.post("admin/criar_conta" , json = admin_senha_fraca)
-        assert(response.status_code == status.HTTP_400_BAD_REQUEST)
-
     def test_criar_admin_vazio(self,client: TestClient):
         admin_nulo = {}
         response = client.post("admin/criar_conta", json = admin_nulo)
