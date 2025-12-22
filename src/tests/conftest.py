@@ -61,13 +61,14 @@ def admin_payload():
         "cpf": "08601441009",
         "senha": "Gri90p2M@8(Y",
     }
+
 @pytest.fixture
 def usuario_payload():
     return {
         "nome": "Cliente Feliz",
-        "cpf": "11122233344",
+        "cpf": "27894266000",
         "email": "cliente@email.com",
-        "senha": "senha_cliente",
+        "senha": "Senha_cliente1",
         "endereco" : "rua 1" 
 }
 @pytest.fixture
