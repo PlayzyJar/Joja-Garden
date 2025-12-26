@@ -29,7 +29,7 @@ def test_nao_permite_acao_invalida(
     )
 
     assert response.status_code == 400
-3#ca02
+#ca02
 def test_acao_registra_data_hora(
     client, get_usuario_header, planta_usuario
 ):
