@@ -182,5 +182,14 @@ def planta_usuario(client:TestClient, get_admin_header, get_usuario_header_com_i
     assert resp_planta_usuario.status_code == 201
     return resp_planta_usuario.json()
     
+@pytest.fixture
+def jardim_criado(client, get_usuario_header_com_id):
+    response = client.post(
+        "/jardim/criar_jardim",
+        headers={'Authorization': get_usuario_header_com_id['Authorization']},
+        json={"nome": "Jardim1"}
+    )
 
+    assert response.status_code == 201
+    return response.json()
 
