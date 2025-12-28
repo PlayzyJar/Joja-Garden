@@ -113,7 +113,10 @@ def get_usuario_header(client:TestClient, usuario_payload, get_admin_header):
 
 
 
-@pytest.fixture
+
+
+
+
 
 @pytest.fixture
 def get_usuario_header_com_id(client:TestClient, usuario_payload, get_admin_header):
