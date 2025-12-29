@@ -40,7 +40,7 @@ def adicionar_imagem_planta(
     return nova_imagem
 
 @router.get(
-    "/{planta.id}/galeria",
+    "/{planta_id}/galeria",
     response_model= List[ImagemResponse]
 )
 def ver_galeria(

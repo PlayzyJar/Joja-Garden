@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from main.api.deps import get_current_active_admin, get_db  # <--- Importante
+from main.api.deps import get_current_active_admin, get_db, get_current_user  # <--- Importante
 from main.core.security import get_password_hash
 from main.models.user import Super_usuario, Usuario
 from main.schemas.usuario_schema import UsuarioCreate, UsuarioResponse
@@ -60,3 +60,12 @@ def ler_usuario_cpf(
     if not usuario:
         raise HTTPException(status_code = 400, detail = "Usuario não encontrado")
     return usuario
+
+@router.get(f"/dados-cadastrais", response_model = UsuarioResponse, status_code = status.HTTP_200_OK)
+
+def meus_dados(
+    current_user = Depends(get_current_user)
+    
+):
+
+    return current_user
