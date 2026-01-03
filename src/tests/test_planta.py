@@ -110,8 +110,14 @@ class TestAdicionarPlantaAoUsuario:
         assert(response.status_code == status.HTTP_401_UNAUTHORIZED)
 
 class TestVisualizarPlantaUsuario:
-    def test_visulizar_planta_do_usuario(self, client:TestClient, get_usuario_header_com_id, planta_usuario):
+    def test_visulizar_planta_do_usuario_sucesso(self, client:TestClient, get_usuario_header_com_id, planta_usuario):
         current_user = {'Authorization' : get_usuario_header_com_id['Authorization']}
         response = client.get(f'/planta/{planta_usuario['id']}', headers=current_user)
         assert response.status_code == status.HTTP_200_OK
         assert response.json()['apelido'] == planta_usuario['apelido']
+
+    def test_visulizar_planta_do_usuario_fracasso(self, client:TestClient, get_usuario_header_com_id):
+        current_user = {'Authorization' : get_usuario_header_com_id['Authorization']}
+        response = client.get(f'/planta/{1}', headers=current_user)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json()['detail'] == 'Planta não encontrada'
