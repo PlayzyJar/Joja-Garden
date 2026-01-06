@@ -92,3 +92,43 @@ def visualizar_minha_planta(
     return planta
 
 
+@router.delete(
+    "/{planta_id}", 
+    status_code=status.HTTP_200_OK
+)
+def deletar_minha_planta(
+    planta_id: int,
+    current_user = Depends(get_current_user), 
+    session = Depends(get_db)
+):
+    """
+    Deleta uma planta do usuário logado pelo ID.
+    (Acesso apenas para o Usuário Logado e apenas para suas próprias plantas)
+    """
+    
+    planta_a_deletar = (
+        session.query(PlantaUsuario)
+        .filter(PlantaUsuario.id == planta_id, PlantaUsuario.usuario_id == current_user.id)
+        .first()
+    )
+
+    # 2. Verifica se a planta existe e pertence ao usuário
+    if not planta_a_deletar:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail="Planta não encontrada ou não pertence a este usuário."
+        )
+
+    apelido_planta = planta_a_deletar.apelido
+    
+
+    session.delete(planta_a_deletar)
+    session.commit()
+
+    return {
+        "message": f"A planta {apelido_planta} foi removida com sucesso de suas plantas."
+    }
+
+
+
+
