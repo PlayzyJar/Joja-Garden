@@ -10,6 +10,7 @@ from main.schemas.planta_catalogo_schema import (
     PlantaUsuarioCreate,
     PlantaUsuarioResponse,
 )
+from typing import List
 
 router = APIRouter()
 
@@ -47,6 +48,32 @@ def adicionar_planta_ao_usuario(
     return nova_planta_usuario
 
 @router.get(
+    "/minhas-plantas",
+    response_model=List[PlantaUsuarioResponse], # Retorna uma lista de respostas
+    status_code=status.HTTP_200_OK
+)
+def listar_minhas_plantas(
+    current_user: Usuario = Depends(get_current_user), # Obtém o usuário logado
+    session: Session = Depends(get_db)
+):
+    """
+    Lista todas as plantas cadastradas que pertencem ao usuário autenticado.
+    (Acesso apenas para o Usuário Logado)
+    """
+    
+    plantas_do_usuario = (
+        session.query(PlantaUsuario)
+        .filter(PlantaUsuario.usuario_id == current_user.id)
+        .all()
+    )
+    
+    if not plantas_do_usuario:
+        return []
+    
+    return plantas_do_usuario
+
+
+@router.get(
     "/{planta_id}",
     response_model = PlantaUsuarioResponse,
     status_code = status.HTTP_200_OK
@@ -63,3 +90,5 @@ def visualizar_minha_planta(
         raise HTTPException(status_code = 400, detail = "Planta não encontrada")
     
     return planta
+
+
