@@ -7,9 +7,9 @@ from main.models.user import Super_usuario, Usuario
 from main.schemas.usuario_schema import UsuarioCreate, UsuarioResponse
 from main.schemas.alterar_senha_schema import AlterarSenha
 from services.verificacoes import valida_cpf, valida_senha
+from typing import List
 
 router = APIRouter()
-
 
 @router.post("/", response_model=UsuarioResponse, status_code=status.HTTP_201_CREATED)
 def create_usuario(
@@ -71,6 +71,21 @@ def meus_dados(
 
     return current_user
 
+
+@router.get("/all", response_model=List[UsuarioResponse], status_code=status.HTTP_200_OK)
+def list_all_usuarios(
+    session: Session = Depends(get_db),
+    current_admin=Depends(get_current_active_admin), 
+):
+    """
+    Lista todos os usuários cadastrados no banco de dados.
+    (Exclusivo para Administradores)
+    """
+    # 1. Busca todos os usuários na tabela Usuario
+    usuarios = session.query(Usuario).all()
+    
+    return usuarios
+
 @router.put("/alterar-senha", status_code = status.HTTP_200_OK)
 def alterar_senha(
     senha : AlterarSenha,
@@ -97,4 +112,33 @@ def alterar_senha(
     session.commit()
 
     return {"msg" : "A senha foi alterada com sucesso"}
-    #salva a senha no banco
+
+
+@router.delete("/{user_id}", status_code=status.HTTP_200_OK)
+def delete_usuario(
+    user_id: int,
+    session: Session = Depends(get_db),
+    current_admin: Super_usuario = Depends(get_current_active_admin), # Garante que apenas Admin possa deletar
+):
+    """
+    Deleta um usuário do banco de dados (exclusivo para Administradores).
+    """
+    
+    usuario_a_deletar = session.query(Usuario).filter(Usuario.id == user_id).first()
+
+    if not usuario_a_deletar:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail=f"Usuário com ID {user_id} não encontrado."
+        )
+
+    nome_usuario_deletado = usuario_a_deletar.nome
+
+    session.delete(usuario_a_deletar)
+    session.commit()
+    
+    return {
+        "message": f"Usuário {nome_usuario_deletado} foi deletado."
+    }
+
+
