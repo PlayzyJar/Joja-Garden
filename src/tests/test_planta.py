@@ -121,3 +121,4 @@ class TestVisualizarPlantaUsuario:
         response = client.get(f'/planta/{1}', headers=current_user)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json()['detail'] == 'Planta não encontrada'
+
