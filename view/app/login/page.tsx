@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Leaf, Lock, User } from "lucide-react";
 import { authService } from "@/services/authService";
-// IMPORTANTE: Importamos a instância do Axios para configurar o header manualmente
 import api from "@/services/api";
 
 export default function LoginPage() {
@@ -34,16 +33,7 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-    
-    const data = await authService.login(cpf, password);
-    
-    try {
-      const payload = JSON.parse(atob(data.access_token.split('.')[1]));
-      console.log("QUEM SOU EU NO TOKEN?", payload);
-    } catch (e) {
-      console.log("Token não é JWT ou erro ao ler", e);
-    }
-    
+
     try {
       // 1. Faz a requisição ao backend
       const data = await authService.login(cpf, password);
@@ -55,8 +45,6 @@ export default function LoginPage() {
       // Isso evita que a Home carregue antes do interceptor ler o LocalStorage.
       api.defaults.headers.common["Authorization"] =
         `Bearer ${data.access_token}`;
-
-      console.log("Login realizado com sucesso. Redirecionando...");
 
       // 4. Redireciona para a Home
       router.push("/");

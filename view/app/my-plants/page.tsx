@@ -41,7 +41,6 @@ interface MinhaPlanta {
 }
 
 export default function MyPlantsPage() {
-  const { user } = useAuth(); // Se precisar do token/user
   const [plants, setPlants] = useState<MinhaPlanta[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");

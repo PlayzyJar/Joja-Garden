@@ -9,7 +9,6 @@ import {
   Plus,
   Loader2,
   Sprout,
-  Trash2, // Caso queira implementar remoção futura
   Leaf
 } from "lucide-react"
 

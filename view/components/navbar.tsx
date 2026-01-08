@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import {
+  ChevronRight,
   Leaf,
   Menu,
   Home,
@@ -130,7 +131,7 @@ export default function Navbar() {
                 <p className="text-xs font-semibold text-tertiary uppercase tracking-wider">
                   Navegação
                 </p>
-                
+
                 <Link href="/" onClick={closeMenu}>
                   <Button
                     variant="ghost"
@@ -185,36 +186,81 @@ export default function Navbar() {
                     </div>
 
                     <Link href="/sign-up-user" onClick={closeMenu}>
-                      <Button variant="ghost" className="w-full justify-start gap-3 text-gray-600 hover:text-primary font-normal">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start gap-3 text-gray-600 hover:text-primary font-normal"
+                      >
                         <UserPlus size={18} /> Novo Usuário
                       </Button>
                     </Link>
 
                     <Link href="/sign-up-admin" onClick={closeMenu}>
-                      <Button variant="ghost" className="w-full justify-start gap-3 text-gray-600 hover:text-primary font-normal">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start gap-3 text-gray-600 hover:text-primary font-normal"
+                      >
                         <ShieldCheck size={18} /> Novo Admin
                       </Button>
                     </Link>
 
                     <Link href="/manage-users" onClick={closeMenu}>
-                      <Button variant="ghost" className="w-full justify-start gap-3 text-gray-600 hover:text-primary font-normal">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start gap-3 text-gray-600 hover:text-primary font-normal"
+                      >
                         <Users size={18} /> Gerenciar Usuários
                       </Button>
                     </Link>
 
-                    <Collapsible open={isPlantsOpen} onOpenChange={setIsPlantsOpen} className="space-y-1">
+                    <Link href="/manage-admins" onClick={closeMenu}>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start gap-3 text-gray-600 hover:text-primary font-normal"
+                      >
+                        <ShieldCheck size={18} /> Gerenciar Admins
+                      </Button>
+                    </Link>
+
+                    <Collapsible
+                      open={isPlantsOpen}
+                      onOpenChange={setIsPlantsOpen}
+                      className="space-y-1"
+                    >
                       <CollapsibleTrigger asChild>
-                        <Button variant="ghost" className="w-full justify-between text-gray-600 hover:text-primary font-normal">
-                          <span className="flex items-center gap-3"><Flower2 size={18} /> Adicionar Plantas</span>
-                          <ChevronDown size={16} className={`transition-transform duration-200 ${isPlantsOpen ? "rotate-180" : ""}`} />
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-between text-gray-600 hover:text-primary font-normal"
+                        >
+                          <span className="flex items-center gap-3">
+                            <Flower2 size={18} /> Adicionar Plantas
+                          </span>
+                          <ChevronDown
+                            size={16}
+                            className={`transition-transform duration-200 ${isPlantsOpen ? "rotate-180" : ""}`}
+                          />
                         </Button>
                       </CollapsibleTrigger>
                       <CollapsibleContent className="pl-4 space-y-1">
-                        <Link href="/catalogo/adicionar_planta_catalogo" onClick={closeMenu}>
-                          <Button variant="ghost" size="sm" className="w-full justify-start text-gray-500 hover:text-secondary font-light pl-9">• Ao Catálogo Geral</Button>
+                        <Link
+                          href="/catalogo/adicionar_planta_catalogo"
+                          onClick={closeMenu}
+                        >
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full justify-start text-gray-500 hover:text-secondary font-light pl-9"
+                          >
+                            • Ao Catálogo Geral
+                          </Button>
                         </Link>
                         <Link href="/admin/atribuir-planta" onClick={closeMenu}>
-                          <Button variant="ghost" size="sm" className="w-full justify-start text-gray-500 hover:text-secondary font-light pl-9">• A um Usuário</Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full justify-start text-gray-500 hover:text-secondary font-light pl-9"
+                          >
+                            • A um Usuário
+                          </Button>
                         </Link>
                       </CollapsibleContent>
                     </Collapsible>
@@ -224,24 +270,55 @@ export default function Navbar() {
               )}
 
               {/* 3. CONTA / LOGOUT */}
+              {/* 3. CONTA / LOGOUT */}
               <div className="space-y-4">
-                <p className="text-xs font-semibold text-tertiary uppercase tracking-wider">Conta</p>
+                <p className="text-xs font-semibold text-tertiary uppercase tracking-wider">
+                  Conta
+                </p>
                 {user ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 p-3 bg-quaternary/50 rounded-lg border border-tertiary/5">
-                      <div className="bg-primary/10 p-2 rounded-full text-primary"><User size={20} /></div>
-                      <div className="overflow-hidden">
-                        <p className="text-sm font-bold text-primary truncate">{user.nome}</p>
-                        <p className="text-xs text-tertiary truncate">{user.email || user.tipo_usuario}</p>
+                  <div className="space-y-3">
+                    {/* CARD DO USUÁRIO AGORA É UM LINK */}
+                    <Link
+                      href="/account-details"
+                      onClick={closeMenu}
+                      className="group block"
+                    >
+                      <div className="flex items-center gap-3 p-3 bg-quaternary/50 rounded-xl border border-tertiary/5 group-hover:bg-primary/5 group-hover:border-primary/20 transition-all cursor-pointer">
+                        <div className="bg-primary/10 p-2.5 rounded-full text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                          <User size={20} />
+                        </div>
+                        <div className="flex-1 overflow-hidden">
+                          <p className="text-sm font-bold text-primary truncate group-hover:text-secondary transition-colors">
+                            {user.nome}
+                          </p>
+                          <p className="text-xs text-tertiary truncate capitalize">
+                            {user.tipo_usuario}
+                          </p>
+                        </div>
+                        <ChevronRight
+                          size={18}
+                          className="text-tertiary/50 group-hover:text-primary group-hover:translate-x-1 transition-all"
+                        />
                       </div>
-                    </div>
-                    <Button onClick={handleLogout} variant="ghost" className="w-full justify-center gap-2 bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600 font-medium">
+                    </Link>
+
+                    <Button
+                      onClick={handleLogout}
+                      variant="ghost"
+                      className="w-full justify-start gap-3 text-red-500 hover:bg-red-50 hover:text-red-600 font-medium pl-4"
+                    >
                       <LogOut size={18} /> Sair
                     </Button>
                   </div>
                 ) : (
-                  <Link href="/login" onClick={closeMenu} className="w-full block">
-                    <Button className="w-full rounded-full bg-primary hover:bg-secondary text-white font-semibold">Fazer Login</Button>
+                  <Link
+                    href="/login"
+                    onClick={closeMenu}
+                    className="w-full block"
+                  >
+                    <Button className="w-full rounded-full bg-primary hover:bg-secondary text-white font-semibold">
+                      Fazer Login
+                    </Button>
                   </Link>
                 )}
               </div>

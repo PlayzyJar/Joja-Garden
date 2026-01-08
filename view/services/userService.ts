@@ -2,6 +2,18 @@ import api from "./api";
 import { IUser } from "../types";
 
 export const userService = {
+  // Rota baseada na sua imagem: PUT /usuario/alterar-senha
+  updatePassword: async (dados: {
+    senha_atual: string;
+    nova_senha: string;
+  }) => {
+    try {
+      const response = await api.put("/usuario/alterar-senha", dados);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
   /**
    * Adiciona uma planta do catálogo ao usuário específico.
    * Endpoint: POST /planta/usuario/{usuario_id}/adicionar
@@ -16,30 +28,6 @@ export const userService = {
     } catch (error) {
       console.error(
         `Erro ao adicionar planta ao usuário ${targetUserId}:`,
-        error,
-      );
-      throw error;
-    }
-  },
-  
-  /**
-   * FUNÇÃO NOVA: Permite a um ADMIN alterar a senha de qualquer usuário.
-   * Baseado no endpoint PUT /admin/{admin_id}/alterar-senha (da imagem image_0.png)
-   */
-  changeUserPasswordByAdmin: async (
-    targetUserId: number,
-    newPassword: string,
-  ) => {
-    try {
-      // O corpo da requisição espera um JSON com o campo "senha"
-      // Ajuste se o backend esperar outro nome (ex: "nova_senha")
-      await api.put(`/admin/${targetUserId}/alterar-senha`, {
-        senha_atual: "Senhaboa321",
-        nova_senha: newPassword,
-      });
-    } catch (error) {
-      console.error(
-        `Erro ao alterar a senha do usuário ID ${targetUserId}:`,
         error,
       );
       throw error;
@@ -77,16 +65,6 @@ export const userService = {
       return response.data;
     } catch (error) {
       console.error(`Erro ao buscar usuário com CPF ${cpf}:`, error);
-      throw error;
-    }
-  },
-
-  // --- (Futuro) Alterar senha de Admin ---
-  updateAdminPassword: async (adminId: number, novaSenha: string) => {
-    try {
-      await api.put(`/admin/${adminId}/alterar-senha`, { senha: novaSenha });
-    } catch (error) {
-      console.error("Erro ao alterar senha:", error);
       throw error;
     }
   },
