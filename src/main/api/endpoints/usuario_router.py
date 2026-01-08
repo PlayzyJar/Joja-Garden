@@ -17,9 +17,9 @@ from main.schemas.admin_schema import (  # adicionei issu aqui meus casas
 from main.schemas.alterar_senha_schema import AlterarSenha
 from main.schemas.usuario_schema import UsuarioCreate, UsuarioResponse
 from services.verificacoes import valida_cpf, valida_senha
-from typing import List
 
 router = APIRouter()
+
 
 @router.post("/", response_model=UsuarioResponse, status_code=status.HTTP_201_CREATED)
 def create_usuario(
@@ -82,7 +82,8 @@ def meus_dados(current_user=Depends(get_current_user)):
     # Se não for admin, retorna como usuário comum
     return current_user
 
-@router.put("/alterar-senha", status_code = status.HTTP_200_OK)
+
+@router.put("/alterar-senha", status_code=status.HTTP_200_OK)
 def alterar_senha(
     senha: AlterarSenha, current_user=Depends(get_current_user), session=Depends(get_db)
 ):
@@ -110,5 +111,5 @@ def alterar_senha(
     session.add(current_user)
     session.commit()
 
-    return {"msg" : "A senha foi alterada com sucesso"}
-    #salva a senha no banco
+    return {"msg": "A senha foi alterada com sucesso"}
+    # salva a senha no banco
