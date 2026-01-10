@@ -1,35 +1,48 @@
+import axios from "axios";
 import api from "./api";
-import { ILoginResponse } from "../types";
+
+// Define a URL base aqui para não repetir string mágica.
+// Idealmente vem do .env, mas tem o fallback para o localhost.
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const TOKEN_KEY = "joja_token";
 
 export const authService = {
   login: async (cpf: string, password: string) => {
-    // 1. O Swagger pede "application/x-www-form-urlencoded".
-    // No JavaScript, usamos URLSearchParams para criar esse formato.
     const params = new URLSearchParams();
-    
-    // 2. O backend espera o campo "username", mesmo sendo CPF.
-    params.append('username', cpf); 
-    params.append('password', password);
+    params.append("username", cpf);
+    params.append("password", password);
 
-    // 3. A rota exata conforme sua foto
-    const response = await api.post<ILoginResponse>("/auth/token", params, {
+    const response = await axios.post(`${BASE_URL}/auth/token`, params, {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
     });
-    
+
     return response.data;
   },
-  
+
   setToken: (token: string) => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem("joja_token", token);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(TOKEN_KEY, token);
     }
   },
 
+  getToken: () => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem(TOKEN_KEY);
+    }
+    return null;
+  },
+
   logout: () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
+      // 1. Limpa o storage
       localStorage.removeItem("joja_token");
+
+      // 2. [CRUCIAL] Limpa o header da instância do Axios na memória
+      delete api.defaults.headers.common["Authorization"];
+
+      // 3. Força o reload para zerar qualquer estado React (Zustand/Context)
       window.location.href = "/login";
     }
   }
