@@ -88,7 +88,7 @@ def list_all_usuarios(
     return usuarios
 
 @router.put("/alterar-senha", status_code = status.HTTP_200_OK)
-def alterar_senha(
+def alterar_senha_sabendo_antiga(
     senha : AlterarSenha,
     current_user = Depends(get_current_user),
     session = Depends(get_db)
