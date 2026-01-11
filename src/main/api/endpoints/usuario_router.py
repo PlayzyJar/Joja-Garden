@@ -18,7 +18,7 @@ from main.schemas.alterar_senha_schema import AlterarSenha
 from main.schemas.esqueceu_senha_schema import EsqueceuSenha
 from services.verificacoes import valida_cpf, valida_senha
 from typing import Union, List
-from main.schemas.usuario_schema import UsuarioCreate, UsuarioResponse
+from main.schemas.usuario_schema import UsuarioCreate, UsuarioResponse, CPFBuscador
 from services.verificacoes import valida_cpf, valida_senha
 
 router = APIRouter()
@@ -95,6 +95,36 @@ def list_all_usuarios(
     usuarios = session.query(Usuario).all()
     
     return usuarios
+
+@router.post("/email", status_code=status.HTTP_200_OK) # Agora é um POST para /email
+def buscar_email_por_cpf(
+    dados_in: CPFBuscador, # Recebe o schema no corpo (body)
+    session: Session = Depends(get_db)
+):
+    """
+    Busca e retorna o email de um usuário a partir do CPF (enviado no corpo da requisição).
+    (Não requer autenticação - uso em "Esqueci a Senha")
+    """
+    cpf = dados_in.cpf # Extrai o CPF do corpo da requisição
+    
+    # 1. Validação do CPF
+    if not valida_cpf(cpf):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Formato de CPF inválido."
+        )
+
+    # 2. Busca o usuário
+    usuario = session.query(Usuario).filter(Usuario.cpf == cpf).first()
+
+    if not usuario:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail="Usuário não encontrado."
+        )
+
+    # 3. Retorna o email
+    return {"email": usuario.email}
 
 @router.put("/alterar-senha", status_code=status.HTTP_200_OK)
 def alterar_senha(
