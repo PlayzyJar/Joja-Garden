@@ -50,15 +50,49 @@ def test_aidiconar_planta_no_jardim( client: TestClient, planta_usuario,get_usua
 
     
 
-# def test_nao_pode_adicionar_planta_que_nao_e_do_usuario(
-#     client, get_usuario_header, jardim_criado
-# ):
-#     response = client.post(
-#         f"/{jardim_criado['id']}/adicionar-planta/999",
-#         headers=get_usuario_header
-#     )
+def test_adicionar_planta_ja_pertence_ao_jardim(client: TestClient, get_usuario_header_com_id, planta_catalogo, get_admin_header):
+    header = {"Authorization": get_usuario_header_com_id['Authorization']}
+    user_id = get_usuario_header_com_id["id"]
 
-#     assert response.status_code == 404
+    jardim_resp = client.post("/jardim/criar_jardim", headers=header, json={"nome": "Jardim Teste Reuso"})
+    jardim_id = jardim_resp.json()["id"]
+
+    # 2. Adiciona a Planta ao Usuário
+    planta_resp = client.post(f'/planta/usuario/{user_id}/adicionar', headers=get_admin_header, json={
+        "id": planta_catalogo["id"],
+        "apelido": "Plantinha Duplicada",
+        "data_plantio": '2025-12-25'
+    })
+    planta_id = planta_resp.json()["id"]
+
+    client.post(f'/jardim/{jardim_id}/adicionar-planta/{planta_id}', headers=header)
+    
+    #tenta add a msm planta
+    response = client.post(f'/jardim/{jardim_id}/adicionar-planta/{planta_id}', headers=header)
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert "A planta atual já pertence ao jardim" in response.json()["detail"]
 
 
+def test_adicionar_planta_jardim_nao_encontrado_ou_nao_pertence(client: TestClient, get_usuario_header):
 
+    jardim_id_invalido = 99999 
+    planta_id_qualquer = 1 
+
+    response = client.post(f'/jardim/{jardim_id_invalido}/adicionar-planta/{planta_id_qualquer}', headers=get_usuario_header)
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert "Jardim não encontrado" in response.json()["detail"]
+
+
+def test_adicionar_planta_planta_nao_encontrada_ou_nao_pertence(client: TestClient, get_usuario_header):
+    jardim_resp = client.post("/jardim/criar_jardim", headers=get_usuario_header, json={"nome": "Jardim Planta Invalida"})
+    jardim_id = jardim_resp.json()["id"]
+    
+    # Tenta adicionar uma PlantaUsuario que não existe ou não pertence ao usuário (MISSING 3)
+    planta_id_invalida = 99999 
+
+    response = client.post(f'/jardim/{jardim_id}/adicionar-planta/{planta_id_invalida}', headers=get_usuario_header)
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert "Planta não encontrada no cadastro do usuário" in response.json()["detail"]
