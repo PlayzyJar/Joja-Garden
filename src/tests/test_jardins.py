@@ -142,3 +142,79 @@ def test_remover_jardim_sucesso(client: TestClient, get_usuario_header):
     
     assert response.status_code == status.HTTP_200_OK
     assert "Jardim excluído com sucesso" in response.json()["msg"]
+
+def test_mover_planta_jardim_destino_invalido(client: TestClient, get_usuario_header_com_id, planta_catalogo, get_admin_header):
+    header = {"Authorization": get_usuario_header_com_id['Authorization']}
+    user_id = get_usuario_header_com_id["id"]
+    
+    # 1. Cria a Planta
+    planta_resp = client.post(f'/planta/usuario/{user_id}/adicionar', headers=get_admin_header, json={
+        "id": planta_catalogo["id"],
+        "apelido": "Planta para Mover",
+        "data_plantio": '2025-12-27'
+    })
+    planta_id = planta_resp.json()["id"]
+
+    dados_movimentacao = {
+        "jardim_novo": 99999 # ID inválido (MISSING 1)
+    }
+
+    # Tenta mover para jardim inválido
+    response = client.put(f"/jardim/{planta_id}/mover-planta", headers=header, json=dados_movimentacao)
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert "Jardim novo não encontrado" in response.json()["detail"]
+
+
+def test_mover_planta_planta_nao_encontrada_ou_nao_pertence(client: TestClient, get_usuario_header):
+    # 1. Cria um Jardim de destino válido
+    jardim_resp = client.post("/jardim/criar_jardim", headers=get_usuario_header, json={"nome": "Jardim Destino Valido"})
+    jardim_id = jardim_resp.json()["id"]
+    
+    planta_id_invalida = 99999
+
+    dados_movimentacao = {
+        "jardim_novo": jardim_id
+    }
+
+    # Tenta mover planta inválida
+    response = client.put(f"/jardim/{planta_id_invalida}/mover-planta", headers=get_usuario_header, json=dados_movimentacao)
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert "Planta não pertence ao usuário ou não pertence ao jardim" in response.json()["detail"]
+
+def test_renomear_jardim_nao_encontrado_ou_nao_pertence(client: TestClient, get_usuario_header):
+    jardim_id_invalido = 99999 
+    
+    # Tenta renomear jardim inexistente (MISSING 1)
+    response = client.put(f"/jardim/{jardim_id_invalido}/renomear?novo_nome=NovoNome", headers=get_usuario_header)
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert "Jardim não encontrado" in response.json()["detail"]
+
+
+def test_renomear_jardim_novo_nome_igual_ao_atual(client: TestClient, get_usuario_header):
+    jardim_nome_original = "Jardim Original"
+    
+    jardim_resp = client.post("/jardim/criar_jardim", headers=get_usuario_header, json={"nome": jardim_nome_original})
+    jardim_id = jardim_resp.json()["id"]
+    
+    response = client.put(f"/jardim/{jardim_id}/renomear?novo_nome={jardim_nome_original}", headers=get_usuario_header)
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert "Jardim já possui este nome" in response.json()["detail"]
+
+
+def test_renomear_jardim_sucesso(client: TestClient, get_usuario_header):
+    jardim_nome_original = "Jardim Velho"
+    jardim_nome_novo = "Jardim Renovado"
+    
+    jardim_resp = client.post("/jardim/criar_jardim", headers=get_usuario_header, json={"nome": jardim_nome_original})
+    jardim_id = jardim_resp.json()["id"]
+    
+
+    response = client.put(f"/jardim/{jardim_id}/renomear?novo_nome={jardim_nome_novo}", headers=get_usuario_header)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert "Nome do jardim alterado com sucesso." in response.json()["msg"]
+

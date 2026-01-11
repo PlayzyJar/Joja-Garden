@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class UsuarioCreate(BaseModel):
@@ -17,3 +17,6 @@ class UsuarioResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class CPFBuscador(BaseModel):
+    cpf: str = Field(..., max_length=11, min_length=11, description="CPF do usuário para busca de email.")
