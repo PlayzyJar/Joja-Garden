@@ -58,11 +58,7 @@ from fastapi.testclient import TestClient
 # --- Testes para cobrir validações de REGISTRO (POST) ---
 
 def test_registrar_acao_planta_inexistente(client: TestClient, get_usuario_header_com_id):
-    """
-    Cobre as linhas:
-    if not session.query(PlantaUsuario).filter(PlantaUsuario.id == planta_id).first():
-        raise HTTPException(status_code= 404, detail = "Planta não encontrada")
-    """
+
     header = {"Authorization": get_usuario_header_com_id["Authorization"]}
     id_inexistente = 99999
     
@@ -98,7 +94,7 @@ def test_listar_historico_planta_inexistente(client: TestClient, get_usuario_hea
 
 def test_listar_historico_planta_outro_usuario(client: TestClient, get_usuario_header_com_id, planta_usuario, get_usuario_header_2):
 
-        response = client.get(f'/acao/{planta_usuario['id']}/acoes', headers=get_usuario_header_2)
+        response = client.get(f'/acao/{planta_usuario["id"]}/acoes', headers=get_usuario_header_2)
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json()['detail'] == "Planta não pertence a este usuário"
