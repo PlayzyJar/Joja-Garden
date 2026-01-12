@@ -61,7 +61,7 @@ class TestUsuario:
         assert response.status_code == 400
         assert "Usuario não encontrado" in response.json()["detail"]
 
-    def test_meus_dados_como_admin(self, client: TestClient, get_usuario_header):
+    def test_meus_dados_como_usuario(self, client: TestClient, get_usuario_header):
 
         response = client.get("/usuario/dados-cadastrais", headers=get_usuario_header, )
         
@@ -123,3 +123,70 @@ class TestUsuario:
         
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert f"Usuário com ID {id_inexistente} não encontrado" in response.json()["detail"]
+
+    def test_deletar_usuario(self, client: TestClient, get_admin_header):
+
+        response_1 = client.post('/usuario', headers=get_admin_header, json=usuario_valido)
+        id_user = response_1.json()['id']
+        nome_user = response_1.json()['nome']
+        assert response_1.status_code == status.HTTP_201_CREATED
+
+        response = client.delete(f"/usuario/{id_user}", headers=get_admin_header)
+        assert response.status_code == status.HTTP_200_OK
+        
+        assert response.status_code == status.HTTP_200_OK
+        assert f"Usuário {nome_user} foi deletado." in response.json()["message"]
+
+    def test_ler_usuario_cpf_inexistente_mas_valido(self, client: TestClient, get_admin_header):
+        # CPF válido (formato) mas que não foi cadastrado
+        cpf_nao_cadastrado = "196.719.620-68" 
+        
+        response = client.get(f"/usuario/dados?cpf={cpf_nao_cadastrado}", headers=get_admin_header)
+        
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "Usuario não encontrado" in response.json()["detail"]
+
+    def test_meus_dados_sendo_admin(self, client: TestClient, get_admin_header):
+        
+        response = client.get("/usuario/dados-cadastrais", headers=get_admin_header)
+        
+        assert response.status_code == status.HTTP_200_OK
+        dados = response.json()
+        assert dados["nome"] == "Admin Teste"
+    def test_buscar_email_usuario_nao_encontrado(self, client: TestClient):
+        
+        # CPF válido, mas usuário inexistente
+        cpf_fake = "348.571.620-08"
+        
+        response = client.get(f"/usuario/email?cpf={cpf_fake}")
+        
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert "Usuário não encontrado" in response.json()["detail"]
+    def test_alterar_senha_nova_senha_fraca(self, client: TestClient, get_usuario_header):
+
+        payload = {
+            "senha_atual": "Senha_cliente1",
+            "nova_senha": "Senhaaaa" 
+        }
+        
+        response = client.put("/usuario/alterar-senha", json=payload, headers=get_usuario_header)
+        
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "Senha inválida" in response.json()["detail"]
+
+    def test_alterar_senha_fluxo_completo_sucesso(self, client: TestClient, get_usuario_header):
+ 
+        payload = {
+            "senha_atual": "Senha_cliente1",
+            "nova_senha": "NovaSenhaForte@2024" 
+        }
+        
+        response = client.put("/usuario/alterar-senha", json=payload, headers=get_usuario_header)
+        
+        assert response.status_code == status.HTTP_200_OK
+        assert "A senha foi alterada com sucesso" in response.json()["msg"]
+        
+        # Opcional: Tentar logar com a senha nova para garantir
+        login_novo = {"username": "13765913081", "password": "NovaSenhaForte@2024"}
+        resp_login = client.post("/auth/token", data=login_novo)
+        assert resp_login.status_code == 200
