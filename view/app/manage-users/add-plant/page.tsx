@@ -220,7 +220,7 @@ export default function AddPlantToUserPage() {
                         <img 
                             src={planta.img_url} 
                             alt={planta.nome} 
-                            onError={() => handleSelectPlant && planta.id && handleImageError(planta.id)}
+                            onError={() => planta.id && handleImageError(planta.id)}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                         />
                     ) : (
