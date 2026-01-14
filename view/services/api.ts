@@ -1,9 +1,7 @@
 import axios from "axios";
 
-// Constante para evitar erros de digitação
 export const TOKEN_KEY = "joja_token";
 
-<<<<<<< Updated upstream
 const api = axios.create({
   // Usa variável de ambiente ou fallback
   baseURL: "" || "http://localhost:8000",
