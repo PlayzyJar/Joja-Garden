@@ -15,8 +15,8 @@ import {
   Search,
   Flower2,
   Droplets,
-  Scissors, // Adicionado para o modal
-  X, // Adicionado para o modal
+  Scissors,
+  X,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,7 @@ import {
 import { userService } from "@/services/userService";
 import { catalogoService } from "@/services/catalogoService";
 
-// --- TIPAGEM ATUALIZADA ---
+// --- TIPAGEM ---
 interface CatalogoItem {
   id: number;
   nome: string;
@@ -40,7 +40,6 @@ interface CatalogoItem {
   img_url: string;
   categoria?: string;
   descricao?: string;
-  // Campos adicionais necessários para o novo modal
   familia?: string;
   instrucoes_cuidado?: string;
   periodicidade_rega?: number;
@@ -111,9 +110,15 @@ export default function HomePage() {
       try {
         setLoadingCatalog(true);
         const catalogData = await catalogoService.getAll();
-        setCatalogPreview(
-          Array.isArray(catalogData) ? catalogData.slice(0, 8) : [],
-        );
+        
+        // CORREÇÃO DO ERRO DE BUILD:
+        // Usamos 'as unknown as CatalogoItem[]' para forçar a compatibilidade dos tipos
+        const formattedData = Array.isArray(catalogData) 
+          ? catalogData.slice(0, 8) 
+          : [];
+          
+        setCatalogPreview(formattedData as unknown as CatalogoItem[]);
+        
       } catch (error) {
         console.error("Erro ao carregar catálogo na home:", error);
       } finally {
@@ -292,7 +297,7 @@ export default function HomePage() {
                                 (
                                   e.target as HTMLImageElement
                                 ).nextElementSibling?.classList.remove(
-                                  "hidden",
+                                  "hidden"
                                 );
                               }}
                             />
@@ -426,8 +431,7 @@ export default function HomePage() {
                         <div className="h-32 overflow-hidden relative bg-gray-100">
                           <img
                             src={
-                              plant.catalogo?.img_url ||
-                              "/placeholder-plant.jpg"
+                              plant.catalogo?.img_url || "/placeholder-plant.jpg"
                             }
                             alt={plant.apelido}
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
@@ -601,7 +605,7 @@ export default function HomePage() {
   );
 }
 
-// Pequeno componente auxiliar para seções vazias, para manter o código limpo
+// Pequeno componente auxiliar para seções vazias
 function EmptySection({
   icon,
   title,
