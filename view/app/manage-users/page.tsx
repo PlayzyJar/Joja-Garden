@@ -230,7 +230,7 @@ export default function ManageUsersPage() {
                           <span className="bg-[#49654E] text-white px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm">
                              ID #{usuarioEncontrado.id}
                           </span>
-                          {usuarioEncontrado.tipo_usuario === 'ADMIN' && (
+                          {usuarioEncontrado.tipo_usuario === 'admin' && (
                              <span className="bg-amber-500 text-white px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm">
                                 ADMIN
                              </span>
