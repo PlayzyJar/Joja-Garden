@@ -47,7 +47,9 @@ function ChangePasswordContent() {
       return;
     }
 
+    // Convertendo para número
     const adminId = Number(idParam);
+    
     if (isNaN(adminId)) {
       toast.error("ID Inválido", {
         description: "O ID do usuário não é um número válido.",
@@ -72,7 +74,8 @@ function ChangePasswordContent() {
     setIsLoading(true);
 
     try {
-      await adminService.updateAdminPassword(idParam, {
+      // CORREÇÃO AQUI: Usando 'adminId' (number) ao invés de 'idParam' (string)
+      await adminService.updateAdminPassword(adminId, {
         senha_atual: senhaAtual,
         nova_senha: novaSenha,
       });
